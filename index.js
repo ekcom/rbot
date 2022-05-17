@@ -35,7 +35,7 @@ app.post("/hook", (req, res) => {
     }
     try {
         //const json = JSON.parse(req.body);
-        handleMessage(req.body.json);
+        handleMessage(req.body);
     } catch (err) {
         // do not handle message
         console.error("Could not parse the incoming hook request:", req.body);
