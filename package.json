@@ -4,7 +4,8 @@
   "description": "A daily reminder bot for GroupMe",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index",
+    "cron": "node cron-check"
   },
   "author": "Elijah Mock",
   "license": "ISC",
