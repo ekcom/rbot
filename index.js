@@ -25,10 +25,13 @@ getConfigData((err, json) => {
 });
 
 app.use(express.json());
+
 app.post("/hook", (req, res) => {
     // verify from groupme
     // todo verify via random query parameter agreed upon in setup
-    req.body. process.env.GROUP_ID
+    if (process.env.GROUP_ID && req.body.group_id !== process.env.GROUP_ID) {
+        res.end("go away"); // unconfirmed.
+    }
     try {
         const json = JSON.parse(req.body);
         handleMessage(json);
