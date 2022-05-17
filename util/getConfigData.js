@@ -16,7 +16,7 @@ function getConfigData(cb) {
                 throw new Error("Failed to parse JSON in config file.");
             }
         } catch (error) {
-            cb(error, null); // json is null anyways
+            return cb(error, null); // json is null anyways
         }
         cb(null, json); // yay!
     });

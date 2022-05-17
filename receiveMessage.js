@@ -191,7 +191,7 @@ function setDay(dayString) {
     daysAllowedReadable = daysAllowedReadable.substring(0, daysAllowedReadable.length-2);
     //console.log(daysAllowed, daysAllowedAbbreviated, daysAllowedReadable, daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, ""));
     if (setConfigTo({ daysToSend: daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, "") })) {
-        reply(`Set reminder days to ${daysAllowedReadable}.`);
+        reply(`Set reminder days to ${daysAllowedReadable}.`); // todo here
     } else {
         reply("There was an error setting the reminder days.");
     }
