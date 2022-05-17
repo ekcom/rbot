@@ -9,7 +9,11 @@ function checkMessageToUs(message) {
     const phrases = ["hey rbot", "hey r bot", "hey reminder bot", "hey reminderbot", "rbot", "reminder bot"]; // comma after is irrelavent
     for (const phrase of phrases) {
         if (message.text.trim().toLowerCase().substring(0, phrase.length) === phrase) {
-            return message.text.trim().substring(phrase.length-1).toLowerCase();
+            if (message.text.trim().substring(phrase.length, phrase.length+1) !== " ") {
+                return message.text.trim().substring(phrase.length+2).toLowerCase(); // remove comma/character + space after
+            } else {
+                return message.text.trim().substring(phrase.length+1).toLowerCase(); // remove space after
+            }
         }
     }
     return false;

@@ -4,7 +4,7 @@ const setCronAlarm = require("./setCronAlarm");
 async function check() {
     const result = await setCronAlarm();
     
-    console.log(result);
+    // console.log(result);
     if (result.close === false) {
         // get it on the next pass
         console.log("Shutting down due to time being far off...");
