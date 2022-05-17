@@ -25,7 +25,7 @@ getConfigData((err, json) => {
 });
 
 app.use(express.json());
-app.get("/hook", (req, res) => {
+app.post("/hook", (req, res) => {
     // verify from groupme
     // todo verify via random query parameter agreed upon in setup
     req.body. process.env.GROUP_ID
