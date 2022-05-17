@@ -1,0 +1,51 @@
+// Yessir, I will say "X(message)" [every day/weekdays/weekends] at Y(time)
+// +- 10 minutes
+
+const getConfigData = require("./util/getConfigData");
+const fs = require("fs");
+const express = require("express");
+const setCronAlarm = require("./setCronAlarm");
+const reply = require("./util/sendMessage");
+const app = express();
+const port = process.env.PORT || 9876;
+
+getConfigData((err, json) => {
+    if (err) {
+        // could not get data. Overwrite the file!
+        console.log("Overwriting config.json due to malformality or nonexistance...");
+        fs.copyFile("./default.config.json", "./config.json", null, err => {
+            if (err) {
+                throw new Error("Unable to create config.json file. Do we have sufficient priveledges?", err); // crash app
+            }
+            console.log("Successfully imported default config.json.");
+        });
+    } else {
+        // json ok. proceed as normal...
+    }
+});
+
+app.use(express.json());
+app.get("/hook", (req, res) => {
+    // verify from groupme
+    // todo verify via random query parameter agreed upon in setup
+    req.body. process.env.GROUP_ID
+    try {
+        const json = JSON.parse(req.body);
+        handleMessage(json);
+    } catch (err) {
+        // do not handle message
+        console.error("Could not parse the incoming hook request:", req.body);
+    }
+    // don't worry. be happy
+    res.end("hi group me !");
+});
+
+app.listen(port, () => console.log(`Webserver ready on port ${port}`));
+
+
+setCronAlarm() // check/set up cron
+    .catch(err => {
+        console.error("Error starting cron:", err);
+        reply("On startup, we could not properly schedule the reminder. It may or may not work today.");
+    });
+
