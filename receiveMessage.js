@@ -4,7 +4,7 @@ const reply = require("./util/sendMessage");
 
 
 function checkMessageToUs(message) {
-    if (message.sender_type !== "user") return false;
+    if (message.sender_type !== "user") return false; // ignore bots (including self)
     if (message.system === true) return false;
     const phrases = ["hey rbot", "hey r bot", "hey reminder bot", "hey reminderbot", "rbot", "reminder bot"]; // comma after is irrelavent
     for (const phrase of phrases) {
@@ -17,6 +17,7 @@ function checkMessageToUs(message) {
 
 function handleMessage(message) {
     const query = checkMessageToUs(message).toLowerCase();
+    console.log(`Parsing message '${message}' -> '${query}'`);
     if (query === false) return;
     // there is probably a better way to do this
     if (query.substring(0, 12) === "set name to") {

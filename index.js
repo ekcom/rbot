@@ -38,7 +38,7 @@ app.post("/hook", (req, res) => {
         handleMessage(req.body);
     } catch (err) {
         // do not handle message
-        console.error("Could not parse the incoming hook request:", req.body);
+        console.error("Could not parse the incoming hook request:", req.body, err);
     }
     // don't worry. be happy
     res.end("hi group me !");
