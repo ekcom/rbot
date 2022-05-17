@@ -6,6 +6,7 @@ const fs = require("fs");
 const express = require("express");
 const setCronAlarm = require("./setCronAlarm");
 const reply = require("./util/sendMessage");
+const { handleMessage } = require("./receiveMessage");
 const app = express();
 const port = process.env.PORT || 9876;
 
@@ -33,8 +34,8 @@ app.post("/hook", (req, res) => {
         res.end("go away"); // unconfirmed.
     }
     try {
-        const json = JSON.parse(req.body);
-        handleMessage(json);
+        //const json = JSON.parse(req.body);
+        handleMessage(req.body.json);
     } catch (err) {
         // do not handle message
         console.error("Could not parse the incoming hook request:", req.body);

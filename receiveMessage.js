@@ -6,7 +6,7 @@ const reply = require("./util/sendMessage");
 function checkMessageToUs(message) {
     if (message.sender_type !== "user") return false;
     if (message.system === true) return false;
-    const phrases = ["hey rbot", "hey r bot", "hey reminder bot", "hey reminderbot"]; // comma after is irrelavent
+    const phrases = ["hey rbot", "hey r bot", "hey reminder bot", "hey reminderbot", "rbot", "reminder bot"]; // comma after is irrelavent
     for (const phrase of phrases) {
         if (message.text.trim().toLowerCase().substring(0, phrase.length) === phrase) {
             return message.text.trim().substring(phrase.length);
@@ -247,3 +247,5 @@ function disableReminder() {
         reply("There was an error trying to completely disable the reminder.");
     }
 }
+
+module.exports = { handleMessage };
