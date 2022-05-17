@@ -9,15 +9,14 @@ function checkMessageToUs(message) {
     const phrases = ["hey rbot", "hey r bot", "hey reminder bot", "hey reminderbot", "rbot", "reminder bot"]; // comma after is irrelavent
     for (const phrase of phrases) {
         if (message.text.trim().toLowerCase().substring(0, phrase.length) === phrase) {
-            return message.text.trim().substring(phrase.length);
+            return message.text.trim().substring(phrase.length-1).toLowerCase();
         }
     }
     return false;
 }
 
 function handleMessage(message) {
-    const query = (checkMessageToUs(message)).toLowerCase();
-    console.log(`Parsing message '${message}' -> '${query}'`);
+    const query = checkMessageToUs(message);
     if (query === false) return;
     // there is probably a better way to do this
     if (query.substring(0, 12) === "set name to") {
