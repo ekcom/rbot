@@ -16,7 +16,7 @@ function checkMessageToUs(message) {
 }
 
 function handleMessage(message) {
-    const query = checkMessageToUs(message).toLowerCase();
+    const query = (checkMessageToUs(message)).toLowerCase();
     console.log(`Parsing message '${message}' -> '${query}'`);
     if (query === false) return;
     // there is probably a better way to do this
@@ -139,7 +139,7 @@ function setDay(dayString) {
     // accepts m/mo/mon/monday/mondays with "," or " " separation OR weekdays/week days/everyday/every day/weekends/week ends
     // u=sun, r=thurs
     let days = { sun: false, mon: false, tues: false, wed: false, thurs: false, fri: false, sat: false }; // 0 is sunday, 1 is monday, etc
-    let parsedDays = dayString.toLowerCase.split(/,| /);
+    let parsedDays = dayString.toLowerCase().split(/,| /);
     parsedDays.filter(str => (str.length === 0 || str === "day") ? false : true); // eliminate blanks and chunks due to poor regex
     parsedDays.forEach(str => {
         if (str.substring(0, 5) === "every") {
