@@ -14,6 +14,7 @@ function reply(message, attachments=[]) {
             url: "https://i.groupme.com"
         }*/
     }
+    setTimeout(() => { // slow down the POST: we are too fast
     fetch("https://api.groupme.com/v3/bots/post", {
         method: "POST",
         headers: {
@@ -33,6 +34,7 @@ function reply(message, attachments=[]) {
         }, err => {
             console.log("There was an error replying to a message:", err);
         });
+    }, 50);
 }
 
 module.exports = reply;
