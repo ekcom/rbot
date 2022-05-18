@@ -14,9 +14,9 @@ getConfigData((err, json) => {
     if (err) {
         // could not get data. Overwrite the file!
         console.log("Overwriting config.json due to malformality or nonexistance...");
-        fs.copyFile("./default.config.json", "./config.json", null, err => {
-            if (err) {
-                throw new Error("Unable to create config.json file. Do we have sufficient priveledges?", err); // crash app
+        fs.copyFile("./default.config.json", "./config.json", null, err2 => {
+            if (err2) {
+                throw new Error("Unable to create config.json file. Do we have sufficient priveledges?", err2); // crash app
             }
             console.log("Successfully imported default config.json.");
         });
