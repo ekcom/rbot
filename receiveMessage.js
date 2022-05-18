@@ -214,6 +214,7 @@ function setTime(timeStringPlusJunk) {
         hour += 12;
     }
     // now we just need timeStringArr[0]
+    console.log("[setTime]", timeStringPlusJunk, timeStringArr);
     if (timeStringArr[0].indexOf("p") !== -1) {
         hour += 12; // in the pms
     }
@@ -234,7 +235,6 @@ function setTime(timeStringPlusJunk) {
         minute = parseInt(c[1]);
     }
     if (hour > 24) hour -= 12; // we overshot... hopefully this only runs when hour === 24
-    reply(`[dev] h ${hour} m ${minute} c[0] ${c[0]} c[1] ${c[1]} tsArr[0] ${timeStringArr[0]}`)
     if (setConfigTo({ hourToSend: hour, minuteToSend: minute })) {
         let amPm = "am";
         if (hour > 12) {

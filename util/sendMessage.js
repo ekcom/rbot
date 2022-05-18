@@ -34,7 +34,7 @@ function reply(message, attachments=[]) {
         }, err => {
             console.log("There was an error replying to a message:", err);
         });
-    }, 150);
+    }, 200);
 }
 
 module.exports = reply;
