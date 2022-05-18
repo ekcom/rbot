@@ -19,6 +19,12 @@ getConfigData((err, json) => {
                 throw new Error("Unable to create config.json file. Do we have sufficient priveledges?", err2); // crash app
             }
             console.log("Successfully imported default config.json.");
+            // ready now to continue with processes requiring config.json
+            setCronAlarm() // check/set up cron
+                .catch(err => {
+                    console.error("Error starting cron:", err);
+                    reply("On startup, we could not properly schedule the reminder. It may or may not work today.");
+                });
         });
     } else {
         // json ok. proceed as normal...
@@ -46,10 +52,4 @@ app.post("/hook", (req, res) => {
 
 app.listen(port, () => console.log(`Webserver ready on port ${port}`));
 
-
-setCronAlarm() // check/set up cron
-    .catch(err => {
-        console.error("Error starting cron:", err);
-        reply("On startup, we could not properly schedule the reminder. It may or may not work today.");
-    });
 
