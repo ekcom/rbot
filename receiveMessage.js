@@ -240,7 +240,7 @@ function setTime(timeStringPlusJunk) {
             amPm = "pm";
             hour = hour-12; // for our purposes now
         }
-        if (minute > 10) {
+        if (minute < 10) {
             minute += "0"; // a string now
         }
         reply(`Set reminder to ${hour}:${minute} ${amPm}`);
