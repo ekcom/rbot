@@ -205,7 +205,7 @@ function setDay(dayString) {
     } else {
         reply("There was an error setting the reminder days.");
     }
-}setTime("1600")
+}
 function setTime(timeStringPlusJunk) {
     // accepts 6:30p, 6:30 p, 6:30pm, 6:30 pm, 18:30, 1830, 630 pm, 630pm, 630 p, 630p
     let hour = 0, minute = 0;
