@@ -35,15 +35,15 @@ function handleMessage(message) {
     } else if (query.substring(0, 14) === "set message to") {
         setMessage(query.substring(15));
     } else if (query.substring(0, 20) === "set reminder time to") {
-        setTimeOrDay(query.substring(20));
+        setTimeOrDay(query.substring(21));
     } else if (query.substring(0, 18) === "set remind time to") {
-        setTimeOrDay(query.substring(18));
+        setTimeOrDay(query.substring(19).trim());
     } else if (query.substring(0, 19) === "set message time to") {
-        setTimeOrDay(query.substring(19));
+        setTimeOrDay(query.substring(20));
     } else if (query.substring(0, 19) === "set reminder day to") {
-        setDay(query.substring(19));
-    } else if (query.substring(0, 20) === "set reminder days to") {
         setDay(query.substring(20));
+    } else if (query.substring(0, 20) === "set reminder days to") {
+        setDay(query.substring(21));
     } else if (query.substring(0, 8) === "activate" || query.substring(0, 17) === "activate reminder" || query.substring(0, 21) === "activate the reminder"
         || query.substring(0, 6) === "enable" || query.substring(0, 15) === "enable reminder" || query.substring(0, 19) === "enable the reminder") {
         enableReminder();
@@ -201,11 +201,11 @@ function setDay(dayString) {
     let daysAllowedReadable = daysAllowed.reduce((prev, curr) => prev += curr[0].toUpperCase()+curr.substring(1)+", ", "");
     daysAllowedReadable = daysAllowedReadable.substring(0, daysAllowedReadable.length-2);
     if (setConfigTo({ daysToSend: daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, "") })) {
-        reply(`Set reminder days to ${daysAllowedReadable}.`); // todo here
+        reply(`Set reminder days to ${daysAllowedReadable}.`);
     } else {
         reply("There was an error setting the reminder days.");
     }
-}
+}setTime("1600")
 function setTime(timeStringPlusJunk) {
     // accepts 6:30p, 6:30 p, 6:30pm, 6:30 pm, 18:30, 1830, 630 pm, 630pm, 630 p, 630p
     let hour = 0, minute = 0;
@@ -214,7 +214,6 @@ function setTime(timeStringPlusJunk) {
         hour += 12;
     }
     // now we just need timeStringArr[0]
-    console.log("[setTime]", timeStringPlusJunk, timeStringArr);
     if (timeStringArr[0].indexOf("p") !== -1) {
         hour += 12; // in the pms
     }
@@ -240,6 +239,9 @@ function setTime(timeStringPlusJunk) {
         if (hour > 12) {
             amPm = "pm";
             hour = hour-12; // for our purposes now
+        }
+        if (minute > 10) {
+            minute += "0"; // a string now
         }
         reply(`Set reminder to ${hour}:${minute} ${amPm}`);
     } else {
