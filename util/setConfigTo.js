@@ -4,6 +4,7 @@ const getConfigData = require("./getConfigData");
 function setConfigTo(diff) {
     try {
         getConfigData((err, json) => {
+            console.log("=== [setConfigTo] got config data:",json,"error:",err);
             if (err) throw new Error(err);
             fs.writeFile("./config.json", JSON.stringify({ ... json, ...diff }),()=>console.log("Config file updated."));
         });

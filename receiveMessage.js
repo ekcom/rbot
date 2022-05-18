@@ -190,6 +190,7 @@ function setDay(dayString) {
     let daysAllowedReadable = daysAllowed.reduce((prev, curr) => prev += curr[0].toUpperCase()+curr.substring(1)+", ", "");
     daysAllowedReadable = daysAllowedReadable.substring(0, daysAllowedReadable.length-2);
     //console.log(daysAllowed, daysAllowedAbbreviated, daysAllowedReadable, daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, ""));
+    console.log(parsedDays, daysAllowed, daysAllowedAbbreviated, daysAllowedReadable);
     if (setConfigTo({ daysToSend: daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, "") })) {
         reply(`Set reminder days to ${daysAllowedReadable}.`); // todo here
     } else {
