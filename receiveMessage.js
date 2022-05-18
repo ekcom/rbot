@@ -2,6 +2,7 @@ require("dotenv").config();
 const setConfigTo = require("./util/setConfigTo");
 const reply = require("./util/sendMessage");
 const getConfigData = require("./util/getConfigData");
+const fs = require("fs");
 
 
 function checkMessageToUs(message) {
@@ -85,6 +86,14 @@ function handleMessage(message) {
         reply(`Yes sir, ${message.name}!`);
     } else if (query.substring(0, 7) === "wake up" || query.substring(0, 4) === "ping") {
         reply(`At your service, ${message.name}.`); // @${message.name} ?
+    } else if (query.substring(0, 5) === "reset" || query.substring(0, 9) === "overwrite") {
+        fs.copyFile("./default.config.json", "./config.json", null, err2 => {
+            if (err2) {
+                reply("Error: Unable to copy config.json file.");
+            } else {
+                reply("Successfully imported default config.json.");
+            }
+        });
     } else if (query.substring(0, 6) === "status" || query.substring(0, 18) === "what is the status") {
         getConfigData((err, json) => {
             if (err) {
@@ -132,9 +141,11 @@ function setTimeOrDay(timeOrDay) {
     if (isNaN(timeOrDay.substring(0, 1))) {
         setDay(timeOrDay);
     } else {
-        const chunks = timeOrDay.split(/[0-9] ?p?m?( on)? /i);
-        if (chunks[chunks.length-1].trim() !== "") { // regex to test if giving time AND day
-            setDay(chunks[chunks.length-1].trim());
+        const chunks = timeOrDay.split(/([0-9])( ?[ap]?m?)( on)? /i); // regex to test if giving time AND day
+        const lastChunk = chunks[chunks.length-1].trim();
+        // console.log(chunks);
+        if (lastChunk !== "" && lastChunk !== timeOrDay && lastChunk !== "am" && lastChunk !== "pm") {
+            setTimeout(() => setDay(lastChunk), 200); // give time for first write to finish (todo fix bad code)
         }
         setTime(timeOrDay);
     }
@@ -189,8 +200,6 @@ function setDay(dayString) {
     });
     let daysAllowedReadable = daysAllowed.reduce((prev, curr) => prev += curr[0].toUpperCase()+curr.substring(1)+", ", "");
     daysAllowedReadable = daysAllowedReadable.substring(0, daysAllowedReadable.length-2);
-    //console.log(daysAllowed, daysAllowedAbbreviated, daysAllowedReadable, daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, ""));
-    console.log(parsedDays, daysAllowed, daysAllowedAbbreviated, daysAllowedReadable);
     if (setConfigTo({ daysToSend: daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, "") })) {
         reply(`Set reminder days to ${daysAllowedReadable}.`); // todo here
     } else {
@@ -205,25 +214,26 @@ function setTime(timeStringPlusJunk) {
         hour += 12;
     }
     // now we just need timeStringArr[0]
-    if (timeStringArr[0].indexOf("p") !== 0) {
+    if (timeStringArr[0].indexOf("p") !== -1) {
         hour += 12; // in the pms
     }
     const c = timeStringArr[0].split(/[^0-9]/);
     if (c[0].length > 2) {
         if (c[0].length === 3) {
             // format is 630 [pm]
-            hour += c[0].substring(0, 1);
-            minute = c[0].substring(1, 3);
+            hour += parseInt(c[0].substring(0, 1));
+            minute = parseInt(c[0].substring(1, 3));
         } else {
             // format is 1830
-            hour += c[0].substring(0, 2);
-            minute = c[0].substring(2, 4);
+            hour += parseInt(c[0].substring(0, 2));
+            minute = parseInt(c[0].substring(2, 4));
         }
     } else {
         // format is [h, m]
-        hour += c[0]; // += to maintain pm
-        minute = c[1];
+        hour += parseInt(c[0]); // += to maintain p)m
+        minute = parseInt(c[1]);
     }
+    if (hour > 24) hour -= 12; // we overshot... hopefully this only runs when hour === 24
     if (setConfigTo({ hourToSend: hour, minuteToSend: minute })) {
         let amPm = "am";
         if (hour > 12) {

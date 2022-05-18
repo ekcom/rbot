@@ -4,9 +4,26 @@ const getConfigData = require("./getConfigData");
 function setConfigTo(diff) {
     try {
         getConfigData((err, json) => {
-            console.log("=== [setConfigTo] got config data:",json,"error:",err);
             if (err) throw new Error(err);
-            fs.writeFile("./config.json", JSON.stringify({ ... json, ...diff }),()=>console.log("Config file updated."));
+            // hope this doesn't overlap (race condition warning)
+            // ... todo lockfile
+            // todo: error: idk why but sometimes this will not properly overwrite config.json (even when only updating once)
+            // solution: overwrite as blank first
+            // fs.writeFileSync("./config.json", "{ }", { flag: "r+" }); // <- does not work
+            fs.truncate("./config.json", 0, () => {
+                fs.writeFileSync("./config.json", JSON.stringify({ ...json, ...diff }), { flag: "r+" });
+                // thread was blocked and now:
+                console.log("Config file updated.");
+            });
+            /*const stream = fs.createWriteStream("./config.json");
+            stream.on("ready", () => {
+                stream.write(JSON.stringify({ ... json, ...diff }));
+                stream.end();
+            });
+            stream.on("close", () => {
+                console.log("Config file updated.");
+            });*/
+            //stream.close();
         });
     } catch (err) {
         const ks = Object.keys(diff);
