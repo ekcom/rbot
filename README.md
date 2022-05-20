@@ -23,26 +23,36 @@ View the [full list](./full_commands.md) of available commands. The following ar
 - Hey Reminder Bot, what is the status?
 
 ## Getting Started
-_Confused? Check out [these instructions](#getting-started-for-people-who-have-no-clue-what-they-are-doing)_
-1. Add BOT_ID, GROUP_ID, and DATABASE_URL to the environment variables
- * Include your BOT_ID and GROUP_ID from the [GroupMe API bots page](https://dev.groupme.com/bots)
- * Database must be a postgres database. Works with free Heroku Postgres.
-2. Configure [Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler) (if running free dyno)
+_Confused? Check out [these instructions](#getting-started-for-people-who-have-no-clue-what-they-are-doing)
+1. Configure [Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler) (if running free dyno)
  * Heroku auto-kills your free dynos, so we need to add the Heroku Scheduler add-on
  * Create a new job to run `node cron-check.js` every 10 minutes
  * If you have a paid dyno that does not shut down, you can skip this step
-3. Deploy and start chatting with Reminder Bot
+2. Create a new [GroupMe bot](https://dev.groupme.com/bots)
+ * Enter `Reminder Bot` as the name
+ * Enter `https://i.groupme.com/1000x1000.png.46ad37818d924567985aa2e7f138f791` as the avatar URL
+ * Enter the callback URL. This will be the `/hook` route of wherever you are deploying.
+   For Heroku, 
+3. Add BOT_ID, GROUP_ID, and DATABASE_URL to the environment variables
+ * Include your BOT_ID and GROUP_ID from the [GroupMe API bots page](https://dev.groupme.com/bots)
+ * Database must be a postgres database. Works with free Heroku Postgres.
+4. Deploy and start chatting with Reminder Bot
  * Say "Hey RBot, status" in the group that you added the bot to
 
 ## Getting Started for people who have no clue what they are doing
 1. Fork this repo
  * Click fork
-2. Go to the [GroupMe Bots page](https://dev.groupme.com/bots) (you may need to create an account) and click [Create Bot](https://dev.groupme.com/bots/new). name, cb?
-3. Create a free Heroku account and navigate to the [dashboard](https://dashboard.heroku.com/apps)
- * Click new -> create new app and name it whatever you want (reminder-bot-6000)
+2. Create a free Heroku account and navigate to the [dashboard](https://dashboard.heroku.com/apps)
+ * Click new -> create new app and name it whatever you want (`reminder-bot-6000`). Remember this name.
  * Click create app
  * Scroll down to Connect to GitHub
  * Select the repository you just forked (RBot)
+3. Go to the [GroupMe Bots page](https://dev.groupme.com/bots) (you may need to create an account) and click [Create Bot](https://dev.groupme.com/bots/new).
+ * Enter `Reminder Bot` as the Name
+ * Enter `https://i.groupme.com/1000x1000.png.46ad37818d924567985aa2e7f138f791` as the Avatar URL
+ * If using Heroku, enter in the Callback URL as `YOUR-APP-NAME.herokuapp.com/hook`, replacing `YOUR-APP-NAME` with the name of the Heroku app you created in step 2 (`reminder-bot-6000` for example).
+  * If you are hosting somewhere other than Heroku, set the callback URL to the `/hook` route of your hosted site.
+    For example, if your hosted domain is `https://my-cool-bot.example.com`, the callback URL would be `https://my-cool-bot.example.com/hook`
 4. In your Heroku app dashboard, navigate to Settings and click Reveal Config Vars
  * Enter BOT_ID as KEY and your GroupMe Bot ID in the VALUE section. Then click "Add."
  * Enter GROUP_ID with the Group Id from GroupMe developers
