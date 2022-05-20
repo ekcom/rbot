@@ -32,19 +32,19 @@ function handleMessage(pgClient, message) {
     } else if (query.substring(0, 14) === "change name to") {
         setName(query.substring(15));
     } else if (query.substring(0, 15) === "set reminder to") {
-        setMessage(query.substring(16));
+        setMessage(pgClient, query.substring(16));
     } else if (query.substring(0, 14) === "set message to") {
-        setMessage(query.substring(15));
+        setMessage(pgClient, query.substring(15));
     } else if (query.substring(0, 20) === "set reminder time to") {
-        setTimeOrDay(query.substring(21));
+        setTimeOrDay(pgClient, query.substring(21));
     } else if (query.substring(0, 18) === "set remind time to") {
-        setTimeOrDay(query.substring(19).trim());
+        setTimeOrDay(pgClient, query.substring(19).trim());
     } else if (query.substring(0, 19) === "set message time to") {
-        setTimeOrDay(query.substring(20));
+        setTimeOrDay(pgClient, query.substring(20));
     } else if (query.substring(0, 19) === "set reminder day to") {
-        setDay(query.substring(20));
+        setDay(pgClient, query.substring(20));
     } else if (query.substring(0, 20) === "set reminder days to") {
-        setDay(query.substring(21));
+        setDay(pgClient, query.substring(21));
     } else if (query.substring(0, 8) === "activate" || query.substring(0, 17) === "activate reminder" || query.substring(0, 21) === "activate the reminder"
         || query.substring(0, 6) === "enable" || query.substring(0, 15) === "enable reminder" || query.substring(0, 19) === "enable the reminder") {
         enableReminder(pgClient);
@@ -124,7 +124,7 @@ function setName(name) {
         reply("There was an error changing my name.");
     }
 }
-function setMessage(message) {
+function setMessage(pgClient, message) {
     if (message.trim().length === 0) {
         reply("Did you specify a message to change the reminder to?");
         return false;
@@ -137,20 +137,20 @@ function setMessage(message) {
             });
     }
 }
-function setTimeOrDay(timeOrDay) {
+function setTimeOrDay(pgClient, timeOrDay) {
     if (isNaN(timeOrDay.substring(0, 1))) {
-        setDay(timeOrDay);
+        setDay(pgClient, timeOrDay);
     } else {
         const chunks = timeOrDay.split(/([0-9])( ?[ap]?m?)( on)? /i); // regex to test if giving time AND day
         const lastChunk = chunks[chunks.length-1].trim();
         // console.log(chunks);
         if (lastChunk !== "" && lastChunk !== timeOrDay && lastChunk !== "am" && lastChunk !== "pm") {
-            setDay(lastChunk);
+            setDay(pgClient, lastChunk);
         }
-        setTime(timeOrDay);
+        setTime(pgClient, timeOrDay);
     }
 }
-function setDay(dayString) {
+function setDay(pgClient, dayString) {
     // accepts m/mo/mon/monday/mondays with "," or " " separation OR weekdays/week days/everyday/every day/weekends/week ends
     // u=sun, r=thurs
     let days = { sun: false, mon: false, tues: false, wed: false, thurs: false, fri: false, sat: false }; // 0 is sunday, 1 is monday, etc
@@ -205,7 +205,7 @@ function setDay(dayString) {
             () => reply(`Set reminder days to ${daysAllowedReadable}.`),
             () => reply("There was an error setting the reminder days."));
 }
-function setTime(timeStringPlusJunk) {
+function setTime(pgClient, timeStringPlusJunk) {
     // accepts 6:30p, 6:30 p, 6:30pm, 6:30 pm, 18:30, 1830, 630 pm, 630pm, 630 p, 630p
     let hour = 0, minute = 0;
     const timeStringArr = timeStringPlusJunk.toLowerCase().split(" ");
