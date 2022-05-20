@@ -1,3 +1,5 @@
+// Need to keep operations under 90 seconds to keep things free
+
 const { setCronAlarm } = require("./setCronAlarm");
 const { getClient } = require("./util/pgConnect");
 const msg = require("./util/sendMessage");

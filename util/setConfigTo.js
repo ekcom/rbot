@@ -1,4 +1,3 @@
-const fs = require("fs");
 const { setCronAlarm } = require("../setCronAlarm");
 const getConfigData = require("./getConfigData");
 
@@ -46,8 +45,10 @@ function setConfigTo(client, diff) {
             }
             // for now, set to most recent (todo make better):
             await client.query(`UPDATE reminders SET data = '${JSON.stringify(json)}' WHERE id=(SELECT MAX(id) FROM reminders);`);
-            // reset cron: new data/time will be pulled from the database
-            await setCronAlarm(client);
+            if (diff.hasOwnProperty("hourToSend") || diff.hasOwnProperty("minuteToSend") || diff.hasOwnProperty("daysToSend") || (diff.hasOwnProperty("active") && diff.active === true)) {
+                // reset cron: new data/time will be pulled from the database
+                await setCronAlarm(client);
+            }
             res();
         }, err => {
             const ks = Object.keys(diff);

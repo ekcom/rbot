@@ -1,5 +1,3 @@
-// Need to keep operations under 90 seconds to keep things free
-
 const cron = require("node-cron");
 const sendMsgToGroup = require("./sendReminderMsg");
 const getConfigData = require("./util/getConfigData");
@@ -57,4 +55,4 @@ function cancelCronAlarm() {
     task.stop();
 }
 
-module.exports = { setCronAlarm, cancelCronAlarm };
+module.exports = { task, setCronAlarm, cancelCronAlarm };

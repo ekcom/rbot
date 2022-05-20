@@ -2,7 +2,7 @@ require("dotenv").config();
 const fetch = require("node-fetch");
 const getConfigData = require("./util/getConfigData");
 const { parseGroupmeError } = require("./util/parseGroupmeResponse");
-const setConfigTo = require("./util/setConfigTo");
+// const setConfigTo = require("./util/setConfigTo");
 
 async function sendMsgToGroup(pgClient) {
     return new Promise((res, rej) => {
@@ -31,8 +31,8 @@ async function sendMsgToGroup(pgClient) {
                         return rej(parseGroupmeError(text));
                     }
                     console.log("Message sent.", process.uptime());
-                    //console.log(text);
-                    setConfigTo(pgClient, { lastSent: Date.now() }).then(() => res(), () => rej("Failed to update config."));
+                    
+                    //setConfigTo(pgClient, { lastSent: Date.now() }).then(() => res(), () => rej("Failed to update config.")); // no longer recording lastSent (circular dependency: sendReminderMsg -> setConfigTo -> setCronAlarm)
                 }, error => {
                     rej("Failed to fetch.");
                 });

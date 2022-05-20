@@ -5,32 +5,22 @@ Set a reminder for your whole group every day at a specific time.
 [todo screen shot of "don't forget to log", "it's tea time", "don't forget, meeting is TONIGHT at 6:00!"]
 
 ## Available Commands
-View the [full list](todo link) of available commands. The following are the recommended variations:
+View the [full list](./full_commands.md) of available commands. The following are the recommended variations:
 ### Set up the bot
-- Hey bot, set name to `X`
- - Hey bot, change name to X
-- Hey bot, set reminder to `X`
- - Hey bot, set message to X
+- Hey Reminder Bot, set reminder to `X`
+- Hey Reminder Bot, activate
 ### Configure the bot
-- Hey bot, set reminder time to `X`
- - Hey bot, set [remind/reminder/message] to [everyday, weekdays, weekends, M/T/W/Th/F/S] <- w/ spaces too
- - M/Mo/Monday/Mondays ... T/Th/R/Thursday/Thursdays
-- Hey bot, set reminder time to weekdays
+- Hey Reminder Bot, set reminder time to `X`
+ - Hey Reminder Bot, set reminder day to (everyday, weekdays, weekends, M/T/W/Th/F/S)
+  - format for days can be `M/Mo/Monday/Mondays` etc
+- Hey Reminder Bot, set reminder time to 6pm on weekdays
 ### Activate the bot
-- Hey bot, activate
- - Hey bot, activate the reminder
- - Hey bot, enable
- - Hey bot, enable the reminder
+- Hey Reminder Bot, activate the reminder
 ### Preset the bot
-- Hey bot, use the [user defined] preset
- - Hey bot, use the running preset
-- Hey bot, save this preset [as `X`]
+- Hey Reminder Bot, use the running log preset
 ### Test the bot
-- Hey bot, what is the status
- - Hey bot, status
-- Hey bot, wake up[./!]
- - Hey bot, are you awake[?]
- - Hey bot, ping
+- Hey Reminder Bot, are you awake?
+- Hey Reminder Bot, what is the status?
 
 ## Getting Started
 _Confused? Check out [these instructions](#getting-started-for-people-who-have-no-clue-what-they-are-doing)_
@@ -63,11 +53,10 @@ _Confused? Check out [these instructions](#getting-started-for-people-who-have-n
  * In Run Command, type `node cron-check.js` and then press Save Job
  * For Heroku Postgres, simply search for it and select the `Hobby Dev - Free` option (no further configuration required)
 6. Start chatting with the Reminder Bot
- * In the group you added the bot to, try typing "Hey Reminder Bot,
-... todo
+ * In the group you added the bot to, try typing "Hey Reminder Bot, what is the status"
 
 ## How it works
 - Each message sent in GroupMe is also sent to the bot
 - The bot has code written to parse the message and tell if you are talking to him (his name is Bob)
 - If you are talking to him, you can configure settings (which are stored in a text file instead of a database for simplicity) or enable the daily reminder
-- Heroku will wake the bot up temporarily every 10 minutes to check
+- Heroku will wake the bot up temporarily every 10 minutes to check, and stay awake if it is close to time

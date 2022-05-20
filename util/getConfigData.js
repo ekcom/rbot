@@ -1,5 +1,3 @@
-const { addDefaultRow } = require("./pgSetup");
-
 /*function getConfigData(cb) {
     fs.readFile("./config.json", "utf8", (err, data) => {
         let json;

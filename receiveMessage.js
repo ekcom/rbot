@@ -9,7 +9,7 @@ const { setCronAlarm, cancelCronAlarm } = require("./setCronAlarm");
 function checkMessageToUs(message) {
     if (message.sender_type !== "user") return false; // ignore bots (including self)
     if (message.system === true) return false;
-    const phrases = ["hey rbot", "hey r bot", "hey reminder bot", "hey reminderbot", "rbot", "reminder bot"]; // comma after is irrelavent
+    const phrases = ["hey rbot", "hey r bot", "hey reminder bot", "hey reminderbot", "rbot", "reminder bot", "reminderbot"]; // comma after is irrelavent
     for (const phrase of phrases) {
         if (message.text.trim().toLowerCase().substring(0, phrase.length) === phrase) {
             if (message.text.trim().substring(phrase.length, phrase.length+1) !== " ") {
@@ -33,6 +33,8 @@ function handleMessage(pgClient, message) {
         setName(query.substring(15));
     } else if (query.substring(0, 15) === "set reminder to") {
         setMessage(pgClient, query.substring(16));
+    } else if (query.substring(0, 19) === "set the reminder to") {
+        setMessage(pgClient, query.substring(20));
     } else if (query.substring(0, 14) === "set message to") {
         setMessage(pgClient, query.substring(15));
     } else if (query.substring(0, 20) === "set reminder time to") {
@@ -53,6 +55,7 @@ function handleMessage(pgClient, message) {
         disableReminder(pgClient);
     } else if (query.substring(0, 7) === "use the" && query.substring(query.length-6) === "preset") {
         const presetName = (query.substring(8, query.length-7));
+        // todo enable user-defined preset lookup
         if (presetName === "running" || presetName === "log" || presetName === "running log" || presetName === "running log reminder") {
             const truePresetName = "running log";
             setConfigTo(pgClient, {
@@ -67,7 +70,6 @@ function handleMessage(pgClient, message) {
                 reply(`There was an error loading the ${truePresetName} preset.`);
             });
         } else {
-            // todo enable user-defined preset lookup
             reply("I can't find the preset you are looking for.");
         }
     } else if (query.substring(0, 13) === "save this preset") {
@@ -253,7 +255,7 @@ function enableReminder(pgClient) {
     setConfigTo(pgClient, { active: true })
         .then(() => {
             // initialize cron
-            setCronAlarm(pgClient);
+            //setCronAlarm(pgClient); -- done in setConfigTo
     
             reply("Reminder enabled.");
         },
