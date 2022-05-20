@@ -219,7 +219,7 @@ function setDay(pgClient, dayString) {
 function setTime(pgClient, timeStringPlusJunk) {
     // accepts 6:30p, 6:30 p, 6:30pm, 6:30 pm, 18:30, 1830, 630 pm, 630pm, 630 p, 630p
     let hour = 0, minute = 0;
-    const timeStringArr = "1:45 am".toLowerCase().split(" ");
+    const timeStringArr = timeStringPlusJunk.toLowerCase().split(" ");
     if (timeStringArr[1] === "p" || timeStringArr[1] === "pm") {
         hour += 12;
     }
