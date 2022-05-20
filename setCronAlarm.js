@@ -46,7 +46,7 @@ async function setCronAlarm(pgClient) {
             } else if (minsToSlurp < 0) {
                 while (minsToSlurp < 0) {
                     minsToSlurp++;
-                    sHour++;
+                    sMin++;
                 }
                 while (sMin > 0) { // overcorrection
                     sMin -= 60;
