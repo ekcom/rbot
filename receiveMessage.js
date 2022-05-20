@@ -210,7 +210,10 @@ function setDay(pgClient, dayString) {
     daysAllowedReadable = daysAllowedReadable.substring(0, daysAllowedReadable.length-2);
     setConfigTo(pgClient, { daysToSend: daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, "") })
         .then(
-            () => reply(`Set reminder days to ${daysAllowedReadable}.`),
+            json => {
+                reply(`Set reminder days to ${daysAllowedReadable}.`)
+                //if (json.active === false) reply("Note: The reminder is not active.");
+            },
             () => reply("There was an error setting the reminder days."));
 }
 function setTime(pgClient, timeStringPlusJunk) {
@@ -244,7 +247,7 @@ function setTime(pgClient, timeStringPlusJunk) {
         minute = parseInt(c[1]);
     }
     setConfigTo(pgClient, { hourToSend: hour, minuteToSend: minute })
-        .then(() => {
+        .then(json => {
             let amPm = "am";
             if (hour > 12) {
                 amPm = "pm";
@@ -254,6 +257,7 @@ function setTime(pgClient, timeStringPlusJunk) {
                 minute += "0"; // a string now
             }
             reply(`Set reminder to ${hour}:${minute} ${amPm}`);
+            if (json.active === false) reply("Note: The reminder is not active.");
         },
         () => {
             reply("There was an error setting the reminder time.");

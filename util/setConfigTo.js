@@ -49,7 +49,7 @@ function setConfigTo(client, diff) {
                 // reset cron: new data/time will be pulled from the database
                 await setCronAlarm(client);
             }
-            res();
+            res(json);
         }, err => {
             const ks = Object.keys(diff);
             let things = "";
