@@ -20,7 +20,7 @@ async function setUpDbWithClient() {
     getConfigData(client).then(json => {
         // json ok. proceed as normal...
         if (json.active) {
-            setCronAlarm(client);
+            setCronAlarm(client).then(a => console.log(`Cron alarm set for ${a.time}.`, a), err => console.error("Error setting cron alarm", err));
         }
     }, async err => {
         // could not get data. Crash and burn!

@@ -33,17 +33,18 @@ async function setCronAlarm(pgClient) {
                     });
             });
             //task.start();
+            const now = new Date();
             const alarm = new Date();
-            const future = new Date(alarm.getTime() + WAKEUP_INTERVAL*60*1000 + 60*1000); // 60s startup buffer
             alarm.setHours(data.hourToSend);
             alarm.setMinutes(data.minuteToSend);
+            const nextWakeup = new Date(now.getTime() + WAKEUP_INTERVAL*60*1000 + 60*1000); // 60s startup buffer
             // it may be the wrong day but this is easier (todo)
-            if (future < alarm) {
+            if (now < alarm && nextWakeup > alarm) {
                 //task.stop();
                 //task.destroy();
-                res({ task: task, close: true }); // close enough away
+                res({ task: task, time: `${data.hourToSend}:${data.minuteToSend} on ${days3Letter}`, close: true }); // close enough away
             } else {
-                res({ task: task, close: false });
+                res({ task: task, time: `${data.hourToSend}:${data.minuteToSend} on ${days3Letter}`, close: false });
             }
         }, err => {
             console.error("Error getting config data:", err);

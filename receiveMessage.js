@@ -106,9 +106,9 @@ function handleMessage(pgClient, message) {
         || query.substring(0, 18) === "available commands" || query.substring(0, 31) === "what are the available commands"
         || query.substring(0, 27) === "what commands are available") {
         let msg = "Available commands:\
-            -   set name to\
-            - etc \
-            for more info, visit https://google.com !";
+- set name to\n\
+- etc\n\
+for more info, visit https://google.com !";
         reply(msg);
     } else {
         reply("Sorry, I don't recongize that command.");
