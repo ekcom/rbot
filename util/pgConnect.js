@@ -1,11 +1,10 @@
 require("dotenv").config();
 const { Pool } = require("pg");
+const sslConfig = (process.env.NODE_ENV !== "production") ? false : { rejectUnauthorized: false }; // luv u heroku <3
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    /*ssl: {
-        rejectUnauthorized: false, // luv u heroku <3
-    },*/
+    ssl: sslConfig,
 });
 async function connect() {
     try {
