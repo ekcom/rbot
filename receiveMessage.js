@@ -29,7 +29,13 @@ function handleMessage(pgClient, message) {
     if (query.substring(0, 12) === "set name to") {
         setName(query.substring(13)); // account for space
         // errors are caught in the function above
-    } else if (query.substring(0, 14) === "change name to") {
+    } /*else if (query.substring(0, 15) === "set timezone to") {
+        setTimeZone(query.substring(16));
+    } else if (query.substring(0, 16) === "set time zone to") {
+        setTimeZone(query.substring(17));
+    } else if (query.substring(0, 19) === "available timezones" || query.substring(0, 20) === "available time zones") {
+        reply("See this list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones");
+    } */else if (query.substring(0, 14) === "change name to") {
         setName(query.substring(15));
     } else if (query.substring(0, 15) === "set reminder to") {
         setMessage(pgClient, query.substring(16));
@@ -210,7 +216,7 @@ function setDay(pgClient, dayString) {
 function setTime(pgClient, timeStringPlusJunk) {
     // accepts 6:30p, 6:30 p, 6:30pm, 6:30 pm, 18:30, 1830, 630 pm, 630pm, 630 p, 630p
     let hour = 0, minute = 0;
-    const timeStringArr = timeStringPlusJunk.toLowerCase().split(" ");
+    const timeStringArr = "1:45 am".toLowerCase().split(" ");
     if (timeStringArr[1] === "p" || timeStringArr[1] === "pm") {
         hour += 12;
     }
@@ -222,19 +228,21 @@ function setTime(pgClient, timeStringPlusJunk) {
     if (c[0].length > 2) {
         if (c[0].length === 3) {
             // format is 630 [pm]
-            hour += parseInt(c[0].substring(0, 1));
+            const h = parseInt(c[0].substring(0, 1));
+            if (h !== 12) hour += h;
             minute = parseInt(c[0].substring(1, 3));
         } else {
             // format is 1830
-            hour += parseInt(c[0].substring(0, 2));
+            const h = parseInt(c[0].substring(0, 2));
+            if (h !== 12) hour += h;
             minute = parseInt(c[0].substring(2, 4));
         }
     } else {
         // format is [h, m]
-        hour += parseInt(c[0]); // += to maintain p)m
+        const h = parseInt(c[0]);
+        if (h !== 12) hour += parseInt(c[0]); // += to maintain pm
         minute = parseInt(c[1]);
     }
-    if (hour > 24) hour -= 12; // we overshot... hopefully this only runs when hour === 24
     setConfigTo(pgClient, { hourToSend: hour, minuteToSend: minute })
         .then(() => {
             let amPm = "am";
@@ -273,6 +281,9 @@ function disableReminder(pgClient) {
         () => {
             reply("There was an error trying to completely disable the reminder.");
         });
+}
+function setTimeZone(zoneStr) {
+    // todo
 }
 
 module.exports = { handleMessage };
