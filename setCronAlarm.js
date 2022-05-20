@@ -22,7 +22,40 @@ async function setCronAlarm(pgClient) {
                 days3Letter += threeLetter+",";
             }
             days3Letter = days3Letter.substring(0, days3Letter.length-1); // trim trailing comma
-            task = cron.schedule(`${data.minuteToSend} ${data.hourToSend} * * ${days3Letter}`, () => {
+            /*const t = new Date(); // system time
+            t.setHours(data.hourToSend);
+            t.setMinutes(data.minuteToSend);
+            const tString = t.toLocaleTimeString("en-US", { timeZone: "America/Chicago" }); // central time
+            let [localH, localM, end] = tString.split(":");
+            if (end.indexOf("PM") !== -1) localH += 12; // add in PM
+            console.log(`[cron] System time is ${t.getHours()}:${t.getMinutes()}. Local time is ${localH}:${localM}.`);*/
+            const t = new Date(); // system time
+            const systemOffset = 300 - t.getTimezoneOffset(); // diff from CST America/Chicago (mins)
+            let sHour = data.hourToSend, sMin = data.minuteToSend;
+            let minsToSlurp = systemOffset;
+            if (minsToSlurp > 0) {
+                while (minsToSlurp > 0) { // find system minute
+                    minsToSlurp--;
+                    sMin--;
+                }
+                while (sMin < 0) { // overcorrection
+                    sMin += 60;
+                    sHour -= 1;
+                }
+            } else if (minsToSlurp < 0) {
+                while (minsToSlurp < 0) {
+                    minsToSlurp++;
+                    sHour++;
+                }
+                while (sMin > 0) { // overcorrection
+                    sMin -= 60;
+                    sHour += 1;
+                }
+            }
+            t.setHours(sMin);
+            t.setMinutes(sHour); // input our time into system time
+            console.log(`[cron] Local time goal is ${data.hourToSend}:${data.minuteToSend}. ∴ Sytem goal time is ${sHour}:${sMin}. [Currently ${new Date().toTimeString()}]`);
+            task = cron.schedule(`${sMin} ${sHour} * * ${days3Letter}`, () => {
                 sendMsgToGroup(pgClient)
                     .then(() => console.log("Scheduled message sent to group."))
                     .catch(err => {
