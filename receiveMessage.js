@@ -106,7 +106,7 @@ function handleMessage(pgClient, message) {
     } else if (query.substring(0, 6) === "status" || query.substring(0, 18) === "what is the status" || query.substring(0, 19) === "what is your status") {
         getConfigData(pgClient).then(json => {
             // todo make the time and days more human readable
-            reply(`STATUS REPORT:\nactive: ${json.active}\nmessage: '${json.message}'\ntime to send: ${json.hourToSend}:${json.minuteToSend}\ndays to send: ${json.daysToSend}`);
+            reply(`STATUS REPORT:\nactive: ${json.active}\nmessage: '${json.message}'\ntime to send: ${json.hourToSend}:${json.minuteToSend < 10 ? "0"+json.minuteToSend : json.minuteToSend} CST\ndays to send: ${json.daysToSend}`);
         }, err => {
             reply("There was an error checking the config file.");
         });
@@ -256,7 +256,7 @@ function setTime(pgClient, timeStringPlusJunk) {
                 hour = 12; // to display (12am)
             }
             if (minute < 10) {
-                minute += "0"; // a string now
+                minute = "0"+minute; // a string now
             }
             reply(`Set reminder to ${hour}:${minute} ${amPm}`);
             if (json.active === false) reply("Note: The reminder is not active.");

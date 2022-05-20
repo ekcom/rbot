@@ -29,8 +29,9 @@ async function setCronAlarm(pgClient) {
             let [localH, localM, end] = tString.split(":");
             if (end.indexOf("PM") !== -1) localH += 12; // add in PM
             console.log(`[cron] System time is ${t.getHours()}:${t.getMinutes()}. Local time is ${localH}:${localM}.`);*/
+            // converting CENTRAL time to SERVER time (UTC)
             const t = new Date(); // system time
-            const systemOffset = 300 - t.getTimezoneOffset(); // diff from CST America/Chicago (mins)
+            const systemOffset = t.getTimezoneOffset() - 300; // diff to CST America/Chicago (mins)
             let sHour = data.hourToSend, sMin = data.minuteToSend;
             let minsToSlurp = systemOffset;
             if (minsToSlurp > 0) {
@@ -40,7 +41,7 @@ async function setCronAlarm(pgClient) {
                 }
                 while (sMin < 0) { // overcorrection
                     sMin += 60;
-                    sHour -= 1;
+                    sHour -= 1; // todo fix day wraparound
                 }
             } else if (minsToSlurp < 0) {
                 while (minsToSlurp < 0) {
