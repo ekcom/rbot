@@ -4,32 +4,35 @@
 const getConfigData = require("./util/getConfigData");
 const fs = require("fs");
 const express = require("express");
-const setCronAlarm = require("./setCronAlarm");
+const { setCronAlarm } = require("./setCronAlarm");
 const reply = require("./util/sendMessage");
 const { handleMessage } = require("./receiveMessage");
 const app = express();
 const port = process.env.PORT || 9876;
+const { getClient } = require("./util/pgConnect");
+const { setupDb, addDefaultRow } = require("./util/pgSetup");
 
-getConfigData((err, json) => {
-    if (err) {
-        // could not get data. Overwrite the file!
-        console.log("Overwriting config.json due to malformality or nonexistance...");
-        fs.copyFile("./default.config.json", "./config.json", null, err2 => {
-            if (err2) {
-                throw new Error("Unable to create config.json file. Do we have sufficient priveledges?", err2); // crash app
-            }
-            console.log("Successfully imported default config.json.");
-            // ready now to continue with processes requiring config.json
-            setCronAlarm() // check/set up cron
-                .catch(err => {
-                    console.error("Error starting cron:", err);
-                    reply("On startup, we could not properly schedule the reminder. It may or may not work today.");
-                });
-        });
-    } else {
+async function setUpDbWithClient() {
+    const client = await getClient();
+    await setupDb(client); // set up database
+
+
+    getConfigData(client).then(json => {
         // json ok. proceed as normal...
-    }
-});
+        if (json.active) {
+            setCronAlarm(client);
+        }
+    }, async err => {
+        // could not get data. Crash and burn!
+        console.log("Could not find a preset to load from the database. Adding default row...");
+        await addDefaultRow(client);
+    });
+
+    process.on("exit", () => client.release()); // probably won't have time to run
+}
+setUpDbWithClient();
+
+
 
 app.use(express.json());
 
@@ -41,7 +44,7 @@ app.post("/hook", (req, res) => {
     }
     try {
         //const json = JSON.parse(req.body);
-        handleMessage(req.body);
+        handleMessage(client, req.body);
     } catch (err) {
         // do not handle message
         console.error("Could not parse the incoming hook request:", req.body, err);
@@ -50,6 +53,6 @@ app.post("/hook", (req, res) => {
     res.end("hi group me !");
 });
 
-app.listen(port, () => console.log(`Webserver ready on port ${port}`));
+app.listen(port, () => console.log(`Webserver ready on port ${port}.`));
 
 

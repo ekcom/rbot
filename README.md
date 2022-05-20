@@ -26,15 +26,23 @@ View the [full list](todo link) of available commands. The following are the rec
  - Hey bot, use the running preset
 - Hey bot, save this preset [as `X`]
 ### Test the bot
+- Hey bot, what is the status
+ - Hey bot, status
 - Hey bot, wake up[./!]
  - Hey bot, are you awake[?]
  - Hey bot, ping
 
 ## Getting Started
 _Confused? Check out [these instructions](#getting-started-for-people-who-have-no-clue-what-they-are-doing)_
-1. Add BOT_ID to the environment variables
- * Include your BOT_ID from the [GroupMe API bots page](https://dev.groupme.com/bots)
-... todo
+1. Add BOT_ID, GROUP_ID, and DATABASE_URL to the environment variables
+ * Include your BOT_ID and GROUP_ID from the [GroupMe API bots page](https://dev.groupme.com/bots)
+ * Database must be a postgres database. Works with free Heroku Postgres.
+2. Configure [Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler) (if running free dyno)
+ * Heroku auto-kills your free dynos, so we need to add the Heroku Scheduler add-on
+ * Create a new job to run `node cron-check.js` every 10 minutes
+ * If you have a paid dyno that does not shut down, you can skip this step
+3. Deploy and start chatting with Reminder Bot
+ * Say "Hey RBot, status" in the group that you added the bot to
 
 ## Getting Started for people who have no clue what they are doing
 1. Fork this repo
@@ -47,11 +55,15 @@ _Confused? Check out [these instructions](#getting-started-for-people-who-have-n
  * Select the repository you just forked (RBot)
 4. In your Heroku app dashboard, navigate to Settings and click Reveal Config Vars
  * Enter BOT_ID as KEY and your GroupMe Bot ID in the VALUE section. Then click "Add."
-5. Add-on [Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler)
+ * Enter GROUP_ID with the Group Id from GroupMe developers
+5. Add-on Heroku Scheduler and Heroku Postgres
  > Navigate to the “Resources” tab of the app’s Dashboard. Search for “Heroku Scheduler” in the Add-ons search box. Follow the prompts to provision the Add-on.
  * Click on the Heroku Scheduler in the list and it will open a new tab
  * Click Create job and select Every 10 minutes. This will wake up our bot to check if it is time to send a message every 10 minutes.
  * In Run Command, type `node cron-check.js` and then press Save Job
+ * For Heroku Postgres, simply search for it and select the `Hobby Dev - Free` option (no further configuration required)
+6. Start chatting with the Reminder Bot
+ * In the group you added the bot to, try typing "Hey Reminder Bot,
 ... todo
 
 ## How it works

@@ -1,6 +1,6 @@
-const fs = require("fs");
+const { addDefaultRow } = require("./pgSetup");
 
-function getConfigData(cb) {
+/*function getConfigData(cb) {
     fs.readFile("./config.json", "utf8", (err, data) => {
         let json;
         if (err) {
@@ -15,6 +15,19 @@ function getConfigData(cb) {
             return cb("Failed to parse JSON in config file.", null); // json is null anyways
         }
         cb(null, json); // yay!
+    });
+}*/
+async function getConfigData(client, cb) {
+    return new Promise(async (res, rej) => {
+        try {
+            const result = await client.query("SELECT * FROM reminders ORDER BY id DESC LIMIT 1");
+            if (result === undefined) {
+                throw new Error("No columns to choose from in the database.");
+            }
+            res(result.rows[0].data); // already JSON.parse'd
+        } catch (err) {
+            return rej(err);
+        }
     });
 }
 

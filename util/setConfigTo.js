@@ -1,7 +1,7 @@
 const fs = require("fs");
 const getConfigData = require("./getConfigData");
 
-function setConfigTo(diff) {
+/*function setConfigTo(diff) {
     try {
         getConfigData((err, json) => {
             if (err) throw new Error(err);
@@ -15,14 +15,14 @@ function setConfigTo(diff) {
                 // thread was blocked and now:
                 console.log("Config file updated.");
             });
-            /*const stream = fs.createWriteStream("./config.json");
+            /const stream = fs.createWriteStream("./config.json");
             stream.on("ready", () => {
                 stream.write(JSON.stringify({ ... json, ...diff }));
                 stream.end();
             });
             stream.on("close", () => {
                 console.log("Config file updated.");
-            });*/
+            });/
             //stream.close();
         });
     } catch (err) {
@@ -34,6 +34,27 @@ function setConfigTo(diff) {
         return false;
     }
     return true;
+}*/
+function setConfigTo(client, diff) {
+    return new Promise(async (res, rej) => {
+
+        getConfigData(client).then(async json => {
+            // do not sanitize data. we trust it because it's not from the user
+            for (const k of Object.keys(diff)) {
+                json[k] = diff[k];
+            }
+            // for now, set to most recent (todo make better):
+            await client.query(`UPDATE reminders SET data = '${JSON.stringify(json)}' WHERE id=(SELECT MAX(id) FROM reminders);`);
+            res();
+        }, err => {
+            const ks = Object.keys(diff);
+            let things = "";
+            ks.forEach(k => things += k+", ");
+            things = things.substring(0, things.length-2);
+            console.warn(`Failed to update ${things} for reminder.`, err);
+            rej();
+        });
+    });
 }
 
 module.exports = setConfigTo;

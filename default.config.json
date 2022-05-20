@@ -1,8 +1,0 @@
-{
-    "message": "Reminder! To change this, say 'Hey RBot, set reminder to X'",
-    "active": "false",
-    "hourToSend":"6",
-    "minuteToSend":"30",
-    "daysToSend":"mtwrf",
-    "lastSent": "0"
-}

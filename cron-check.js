@@ -1,9 +1,11 @@
-const setCronAlarm = require("./setCronAlarm");
-
+const { setCronAlarm } = require("./setCronAlarm");
+const { getClient } = require("./util/pgConnect");
+const msg = require("./util/sendMessage");
 
 async function check() {
     try {
-        const result = await setCronAlarm();
+        const client2 = await getClient();
+        const result = await setCronAlarm(client2);
         
         // console.log(result);
         if (result.close === false) {
@@ -11,12 +13,12 @@ async function check() {
             console.log("Shutting down due to time being far off...");
             process.kill(process.pid, "SIGTERM"); // "SIGHUP"
         } else {
-            console.log("Keeping server awake because it is almost time...");
             // it will be past time. wait
+            console.log("Keeping server awake because it is almost time...");
         }
     } catch (err) {
         console.error("[cron-check] Error starting cron:", err);
-        reply("When waking up to check the time, we could not properly schedule the reminder. It may or may not work today.");
+        msg("When waking up to check the time, we could not properly schedule the reminder. It may or may not work today.");
     }
 }
 

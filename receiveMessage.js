@@ -3,6 +3,7 @@ const setConfigTo = require("./util/setConfigTo");
 const reply = require("./util/sendMessage");
 const getConfigData = require("./util/getConfigData");
 const fs = require("fs");
+const { setCronAlarm, cancelCronAlarm } = require("./setCronAlarm");
 
 
 function checkMessageToUs(message) {
@@ -21,7 +22,7 @@ function checkMessageToUs(message) {
     return false;
 }
 
-function handleMessage(message) {
+function handleMessage(pgClient, message) {
     const query = checkMessageToUs(message);
     if (query === false) return;
     // there is probably a better way to do this
@@ -46,25 +47,25 @@ function handleMessage(message) {
         setDay(query.substring(21));
     } else if (query.substring(0, 8) === "activate" || query.substring(0, 17) === "activate reminder" || query.substring(0, 21) === "activate the reminder"
         || query.substring(0, 6) === "enable" || query.substring(0, 15) === "enable reminder" || query.substring(0, 19) === "enable the reminder") {
-        enableReminder();
+        enableReminder(pgClient);
     } else if (query.substring(0, 10) === "deactivate" || query.substring(0, 19) === "deactivate reminder" || query.substring(0, 23) === "deactivate the reminder"
         || query.substring(0, 7) === "disable" || query.substring(0, 16) === "disable reminder" || query.substring(0, 20) === "disable the reminder") {
-        disableReminder();
+        disableReminder(pgClient);
     } else if (query.substring(0, 7) === "use the" && query.substring(query.length-6) === "preset") {
         const presetName = (query.substring(8, query.length-7));
         if (presetName === "running" || presetName === "log" || presetName === "running log" || presetName === "running log reminder") {
             const truePresetName = "running log";
-            if (setConfigTo({
+            setConfigTo(pgClient, {
                 message: "Don't forget to log.",
                 active: true,
                 hourToSend: 6,
                 minuteToSend: 30,
                 daysToSend: "mtwrf",
-            })) {
+            }).then(() => {
                 reply(`Loaded the ${truePresetName} preset.`);
-            } else {
+            }, () => {
                 reply(`There was an error loading the ${truePresetName} preset.`);
-            }
+            });
         } else {
             // todo enable user-defined preset lookup
             reply("I can't find the preset you are looking for.");
@@ -94,14 +95,12 @@ function handleMessage(message) {
                 reply("Successfully imported default config.json.");
             }
         });
-    } else if (query.substring(0, 6) === "status" || query.substring(0, 18) === "what is the status") {
-        getConfigData((err, json) => {
-            if (err) {
-                reply("There was an error checking the config file.");
-                return;
-            }
+    } else if (query.substring(0, 6) === "status" || query.substring(0, 18) === "what is the status" || query.substring(0, 19) === "what is your status") {
+        getConfigData(pgClient).then(json => {
             // todo make the time and days more human readable
             reply(`STATUS REPORT:\nactive: ${json.active}\nmessage: '${json.message}'\ntime to send: ${json.hourToSend}:${json.minuteToSend}\ndays to send: ${json.daysToSend}`);
+        }, err => {
+            reply("There was an error checking the config file.");
         });
     } else if (query.substring(0, 4) === "help" || query.substring(0, 8) === "commands"
         || query.substring(0, 18) === "available commands" || query.substring(0, 31) === "what are the available commands"
@@ -130,11 +129,12 @@ function setMessage(message) {
         reply("Did you specify a message to change the reminder to?");
         return false;
     } else {
-        if (setConfigTo({ message: message })) {
-            reply(`Updated the reminder to '${message}'`);
-        } else {
-            reply("There was an error changing the reminder message.");
-        }
+        setConfigTo(pgClient, { message: message })
+            .then(() => { // res
+                reply(`Updated the reminder to '${message}'`);
+            }, () => { // rej
+                reply("There was an error changing the reminder message.");
+            });
     }
 }
 function setTimeOrDay(timeOrDay) {
@@ -145,7 +145,7 @@ function setTimeOrDay(timeOrDay) {
         const lastChunk = chunks[chunks.length-1].trim();
         // console.log(chunks);
         if (lastChunk !== "" && lastChunk !== timeOrDay && lastChunk !== "am" && lastChunk !== "pm") {
-            setTimeout(() => setDay(lastChunk), 200); // give time for first write to finish (todo fix bad code)
+            setDay(lastChunk);
         }
         setTime(timeOrDay);
     }
@@ -200,11 +200,10 @@ function setDay(dayString) {
     });
     let daysAllowedReadable = daysAllowed.reduce((prev, curr) => prev += curr[0].toUpperCase()+curr.substring(1)+", ", "");
     daysAllowedReadable = daysAllowedReadable.substring(0, daysAllowedReadable.length-2);
-    if (setConfigTo({ daysToSend: daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, "") })) {
-        reply(`Set reminder days to ${daysAllowedReadable}.`);
-    } else {
-        reply("There was an error setting the reminder days.");
-    }
+    setConfigTo(pgClient, { daysToSend: daysAllowedAbbreviated.reduce((prev, curr) => prev += curr, "") })
+        .then(
+            () => reply(`Set reminder days to ${daysAllowedReadable}.`),
+            () => reply("There was an error setting the reminder days."));
 }
 function setTime(timeStringPlusJunk) {
     // accepts 6:30p, 6:30 p, 6:30pm, 6:30 pm, 18:30, 1830, 630 pm, 630pm, 630 p, 630p
@@ -234,37 +233,44 @@ function setTime(timeStringPlusJunk) {
         minute = parseInt(c[1]);
     }
     if (hour > 24) hour -= 12; // we overshot... hopefully this only runs when hour === 24
-    if (setConfigTo({ hourToSend: hour, minuteToSend: minute })) {
-        let amPm = "am";
-        if (hour > 12) {
-            amPm = "pm";
-            hour = hour-12; // for our purposes now
-        }
-        if (minute < 10) {
-            minute += "0"; // a string now
-        }
-        reply(`Set reminder to ${hour}:${minute} ${amPm}`);
-    } else {
-        reply("There was an error setting the reminder time.");
-    }
+    setConfigTo(pgClient, { hourToSend: hour, minuteToSend: minute })
+        .then(() => {
+            let amPm = "am";
+            if (hour > 12) {
+                amPm = "pm";
+                hour = hour-12; // for our purposes now
+            }
+            if (minute < 10) {
+                minute += "0"; // a string now
+            }
+            reply(`Set reminder to ${hour}:${minute} ${amPm}`);
+        },
+        () => {
+            reply("There was an error setting the reminder time.");
+        });
 }
-function enableReminder() {
-    if (setConfigTo({ active: true })) {
-        // todo initialize cron
-
-        reply("Reminder enabled.");
-    } else {
-        reply("There was an error trying to completely enable the reminder.");
-    }
+function enableReminder(pgClient) {
+    setConfigTo(pgClient, { active: true })
+        .then(() => {
+            // initialize cron
+            setCronAlarm(pgClient);
+    
+            reply("Reminder enabled.");
+        },
+        () => {
+            reply("There was an error trying to completely enable the reminder.");
+        });
 }
-function disableReminder() {
-    if (setConfigTo({ active: false })) {
-        // todo cancel cron
-
-        reply("Reminder disabled.");
-    } else {
-        reply("There was an error trying to completely disable the reminder.");
-    }
+function disableReminder(pgClient) {
+    setConfigTo(pgClient, { active: false })
+        .then(() => {
+            // cancel cron (event emitter?)
+            cancelCronAlarm();
+            reply("Reminder disabled.");
+        },
+        () => {
+            reply("There was an error trying to completely disable the reminder.");
+        });
 }
 
 module.exports = { handleMessage };

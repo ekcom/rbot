@@ -5,14 +5,11 @@ const sendMsgToGroup = require("./sendReminderMsg");
 const getConfigData = require("./util/getConfigData");
 const WAKEUP_INTERVAL = 10; // minutes
 
+let task;
 
-async function setCronAlarm() {
+async function setCronAlarm(pgClient) {
     return new Promise((res, rej) => {
-        getConfigData((err, data) => {
-            if (err) {
-                console.error("Error getting config data:", err);
-                rej(err);
-            }
+        getConfigData(pgClient).then(data => {
             let days3Letter = "";
             for (let i = 0; i < data.daysToSend.length; i++) {
                 const letter = data.daysToSend.substring(i, i+1);
@@ -27,14 +24,15 @@ async function setCronAlarm() {
                 days3Letter += threeLetter+",";
             }
             days3Letter = days3Letter.substring(0, days3Letter.length-1); // trim trailing comma
-            const task = cron.schedule(`${data.minuteToSend} ${data.hourToSend} * * ${days3Letter}`, () => {
-                sendMsgToGroup()
+            task = cron.schedule(`${data.minuteToSend} ${data.hourToSend} * * ${days3Letter}`, () => {
+                sendMsgToGroup(pgClient)
                     .then(() => console.log("Scheduled message sent to group."))
                     .catch(err => {
                         //reply("Could not send the scheduled message"); // error could be message is blank
                         console.error("Failed to send message to the group at the scheduled time:", err);
                     });
             });
+            //task.start();
             const alarm = new Date();
             const future = new Date(alarm.getTime() + WAKEUP_INTERVAL*60*1000 + 60*1000); // 60s startup buffer
             alarm.setHours(data.hourToSend);
@@ -47,8 +45,15 @@ async function setCronAlarm() {
             } else {
                 res({ task: task, close: false });
             }
+        }, err => {
+            console.error("Error getting config data:", err);
+            rej(err);
         });
     });
 }
 
-module.exports = setCronAlarm;
+function cancelCronAlarm() {
+    task.stop();
+}
+
+module.exports = { setCronAlarm, cancelCronAlarm };

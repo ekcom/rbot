@@ -4,14 +4,13 @@ const getConfigData = require("./util/getConfigData");
 const { parseGroupmeError } = require("./util/parseGroupmeResponse");
 const setConfigTo = require("./util/setConfigTo");
 
-async function sendMsgToGroup() {
+async function sendMsgToGroup(pgClient) {
     return new Promise((res, rej) => {
         if (!process.env.BOT_ID) {
             return rej("No bot ID in environment variables!"); // return rej(), don't throw new Error()
         }
         let message;
-        getConfigData((err, json) => {
-            if (err) rej(err); // propogate!
+        getConfigData(pgClient).then(json => {
             if (!json.message || json.message.trim() === "") {
                 return rej("No message to send.");
             }
@@ -33,12 +32,11 @@ async function sendMsgToGroup() {
                     }
                     console.log("Message sent.", process.uptime());
                     //console.log(text);
-                    setConfigTo({ lastSent: Date.now() });
-                    res();
+                    setConfigTo(pgClient, { lastSent: Date.now() }).then(() => res(), () => rej("Failed to update config."));
                 }, error => {
                     rej("Failed to fetch.");
                 });
-        });
+        }, err => rej(err)); // propogate!
     });
 }
 
