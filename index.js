@@ -29,30 +29,33 @@ async function setUpDbWithClient() {
     });
 
     process.on("exit", () => client.release()); // probably won't have time to run
+
+
+    // Now that we have a client
+    app.use(express.json());
+    
+    app.post("/hook", (req, res) => {
+        // verify from groupme
+        // todo verify via random query parameter agreed upon in setup
+        if (process.env.GROUP_ID && req.body.group_id !== process.env.GROUP_ID) {
+            res.end("go away"); // unconfirmed.
+        }
+        try {
+            //const json = JSON.parse(req.body);
+            handleMessage(client, req.body);
+        } catch (err) {
+            // do not handle message
+            console.error("Could not parse the incoming hook request:", req.body, err);
+        }
+        // don't worry. be happy
+        res.end("hi group me !");
+    });
+    
+    app.listen(port, () => console.log(`Webserver ready on port ${port}.`));
 }
 setUpDbWithClient();
 
 
 
-app.use(express.json());
-
-app.post("/hook", (req, res) => {
-    // verify from groupme
-    // todo verify via random query parameter agreed upon in setup
-    if (process.env.GROUP_ID && req.body.group_id !== process.env.GROUP_ID) {
-        res.end("go away"); // unconfirmed.
-    }
-    try {
-        //const json = JSON.parse(req.body);
-        handleMessage(client, req.body);
-    } catch (err) {
-        // do not handle message
-        console.error("Could not parse the incoming hook request:", req.body, err);
-    }
-    // don't worry. be happy
-    res.end("hi group me !");
-});
-
-app.listen(port, () => console.log(`Webserver ready on port ${port}.`));
 
 
