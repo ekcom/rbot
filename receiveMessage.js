@@ -45,6 +45,8 @@ function handleMessage(pgClient, message) {
         setMessage(pgClient, query.substring(15));
     } else if (query.substring(0, 20) === "set reminder time to") {
         setTimeOrDay(pgClient, query.substring(21));
+    } else if (query.substring(0, 24) === "set the reminder time to") {
+        setTimeOrDay(pgClient, query.substring(25));
     } else if (query.substring(0, 18) === "set remind time to") {
         setTimeOrDay(pgClient, query.substring(19).trim());
     } else if (query.substring(0, 19) === "set message time to") {

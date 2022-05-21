@@ -27,7 +27,7 @@ All commands start with one of the following trigger phrases (case insensitive):
 - `Hey Rbot,` set ([the] reminder/message) to `X`
  * Updates the reminder text
 ### Configuration
-- `Hey Rbot,` set (reminder/remind/message) (day/days) to `X`
+- `Hey Rbot,` set ([the] reminder/remind/message) (day/days) to `X`
  * `X` can be every day, weekdays, weekends, or the format of R/Th/Thurs/Thursday/Thursdays
  * `X` can include multiple days and formats. For example: `Hey RBot, set reminder days to weekends, Mondays, wed, and f.`
 - `Hey Rbot,` set (reminder/remind/message) time to `X`

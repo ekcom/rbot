@@ -56,6 +56,7 @@ async function setCronAlarm(pgClient) {
             t.setHours(sMin);
             t.setMinutes(sHour); // input our time into system time
             console.log(`[cron] Local time goal is ${data.hourToSend}:${data.minuteToSend}. ∴ Sytem goal time is ${sHour}:${sMin}. [Currently ${new Date().toTimeString()}]`);
+            if (task) task.stop(); // stop previous task
             task = cron.schedule(`${sMin} ${sHour} * * ${days3Letter}`, () => {
                 sendMsgToGroup(pgClient)
                     .then(() => console.log("Scheduled message sent to group."))
