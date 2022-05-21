@@ -43,11 +43,10 @@ function setConfigTo(client, diff) {
             for (const k of Object.keys(diff)) {
                 json[k] = diff[k];
             }
-            // for now, set to most recent (todo make better):
-            console.log("[dev] updating json to", json);
-            await client.query(`UPDATE reminders SET data = '${JSON.stringify(json)}' WHERE id=(SELECT MAX(id) FROM reminders);`);
+            // sanitize ' and other characters from json
+            await client.query(`UPDATE reminders SET data = $1 WHERE id=(SELECT MAX(id) FROM reminders);`, [JSON.stringify(json)]);
             if (diff.hasOwnProperty("hourToSend") || diff.hasOwnProperty("minuteToSend") || diff.hasOwnProperty("daysToSend") || (diff.hasOwnProperty("active") && diff.active === true)) {
-                console.log("resetting cron alarm...");
+                console.log("Resetting cron alarm...");
                 // reset cron: new data/time will be pulled from the database
                 await setCronAlarm(client);
             }
