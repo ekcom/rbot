@@ -22,6 +22,7 @@ function checkMessageToUs(message) {
     return false;
 }
 
+const incorrectCommand = { tries: 0, time: 0 };
 function handleMessage(pgClient, message) {
     const query = checkMessageToUs(message);
     if (query === false) return;
@@ -140,7 +141,17 @@ function handleMessage(pgClient, message) {
             reply(msg);
         });
     } else {
-        reply("Sorry, I don't recongize that command.");
+        if (incorrectCommand.time + 60*1000 < Date.now()) { // 60s timeout
+            if (++incorrectCommand.tries >= 3) {
+                reply("Sorry, I don't recongize that command. Type 'Hey RBot, help' for available commands.");
+                incorrectCommand.tries = 0; // reset
+            } else {
+                reply("Sorry, I still don't recongize that command.");
+            }
+        } else {
+            incorrectCommand.time = Date.now(); // todo here
+            reply("Sorry, I don't recongize that command.");
+        }
     }
 }
 
