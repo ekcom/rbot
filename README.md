@@ -2,9 +2,9 @@
 _A daily reminder bot for GroupMe_
 
 Set a reminder for your whole group every day at a specific time.
-![Reminder bot helpfully reminds the group: Don't forget, meeting is TONIGHT at 6:00!](/screenshots/rbot-demo-1.png)
-![Reminder bot playfully reminds the group: It's tea time!](/screenshots/rbot-demo-2.png)
-![Reminder bot respectfully reminds the group: Don't forget to log.](/screenshots/rbot-demo-3.png)
+<img src="/screenshots/rbot-demo-1.png" alt="Reminder bot helpfully reminds the group: Don't forget, meeting is TONIGHT at 6:00!" height="100">
+<img src="/screenshots/rbot-demo-2.png" alt="Reminder bot playfully reminds the group: It's tea time!" height="100">
+<img src="/screenshots/rbot-demo-3.png" alt="Reminder bot respectfully reminds the group: Don't forget to log." height="50">
 
 ## Available Commands
 View the [full list](./full_commands.md) of available commands. The following are the recommended variations:
