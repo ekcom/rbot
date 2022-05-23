@@ -13,10 +13,11 @@ async function check() {
         if (result.close === false) {
             // get it on the next pass
             console.log("Shutting down due to time being far off...");
-            process.kill(process.pid, "SIGTERM"); // "SIGHUP"
+            process.exit(); //process.kill(process.pid, "SIGTERM"); // "SIGHUP"
         } else {
             // it will be past time. wait
             console.log("Keeping server awake because it is almost time...");
+            // todo... make sure the process actually stays alive?
         }
     } catch (err) {
         console.error("[cron-check] Error starting cron:", err);
