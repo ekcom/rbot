@@ -22,13 +22,6 @@ async function setCronAlarm(pgClient) {
                 days3Letter += threeLetter+",";
             }
             days3Letter = days3Letter.substring(0, days3Letter.length-1); // trim trailing comma
-            /*const t = new Date(); // system time
-            t.setHours(data.hourToSend);
-            t.setMinutes(data.minuteToSend);
-            const tString = t.toLocaleTimeString("en-US", { timeZone: "America/Chicago" }); // central time
-            let [localH, localM, end] = tString.split(":");
-            if (end.indexOf("PM") !== -1) localH += 12; // add in PM
-            console.log(`[cron] System time is ${t.getHours()}:${t.getMinutes()}. Local time is ${localH}:${localM}.`);*/
             // converting CENTRAL time to SERVER time (UTC)
             const t = new Date(); // system time
             const systemOffset = t.getTimezoneOffset() - 300; // diff to CST America/Chicago (mins)

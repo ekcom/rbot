@@ -8,12 +8,12 @@ async function check() {
     try {
         const client2 = await getClient();
         const result = await setCronAlarm(client2);
-        client2.release();
         
         // console.log(result);
         if (result.close === false) {
             // get it on the next pass
             console.log("Shutting down due to time being far off...");
+            client2.release();
             process.exit(); //process.kill(process.pid, "SIGTERM"); // "SIGHUP"
         } else {
             // it will be past time. wait

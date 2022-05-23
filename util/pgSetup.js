@@ -8,7 +8,6 @@ async function setupDb(client) {
         hourToSend INT NOT NULL,
         minuteToSend INT NOT NULL,
         dayToSend VARCHAR(255),
-        lastSent INT NOT NULL,
         PRIMARY KEY (id)
     );*/
     const r = await client.query("SELECT COUNT(data) FROM reminders;");

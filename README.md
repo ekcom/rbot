@@ -23,8 +23,8 @@ View the [full list](./full_commands.md) of available commands. The following ar
 - Hey Reminder Bot, what is the status?
 
 ## Getting Started
-_Confused? Check out [these instructions](#getting-started-for-people-who-have-no-clue-what-they-are-doing)
-1. Configure [Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler) (if running free dyno)
+_Confused? Check out [these instructions](#getting-started-for-people-who-have-no-clue-what-they-are-doing)._
+1. Create Heroku App and configure [Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler) (if running free dyno)
  * Heroku auto-kills your free dynos, so we need to add the Heroku Scheduler add-on
  * Create a new job to run `node cron-check.js` every 10 minutes
  * If you have a paid dyno that does not shut down, you can skip this step
@@ -32,17 +32,17 @@ _Confused? Check out [these instructions](#getting-started-for-people-who-have-n
  * Enter `Reminder Bot` as the name
  * Enter `https://i.groupme.com/1000x1000.png.46ad37818d924567985aa2e7f138f791` as the avatar URL
  * Enter the callback URL. This will be the `/hook` route of wherever you are deploying.
-   For Heroku, 
-3. Add BOT_ID, GROUP_ID, and DATABASE_URL to the environment variables
- * Include your BOT_ID and GROUP_ID from the [GroupMe API bots page](https://dev.groupme.com/bots)
- * Database must be a postgres database. Works with free Heroku Postgres.
+   For Heroku, it will be `YOUR-APP-NAME.herokuapp.com/hook`
+3. Add `BOT_ID`, `GROUP_ID`, and `DATABASE_URL` to the environment variables
+ * Include your `BOT_ID` and `GROUP_ID` from the [GroupMe API bots page](https://dev.groupme.com/bots)
+ * Database must be a postgres database. If you are using free Heroku Postgres, the `DATABASE_URL` env var will already be configured.
 4. Deploy and start chatting with Reminder Bot
  * Say "Hey RBot, status" in the group that you added the bot to
 
 ## Getting Started for people who have no clue what they are doing
 1. Fork this repo
  * Click fork
-2. Create a free Heroku account and navigate to the [dashboard](https://dashboard.heroku.com/apps)
+2. Create a free [Heroku](https://heroku.com) account and navigate to the [dashboard](https://dashboard.heroku.com/apps)
  * Click new -> create new app and name it whatever you want (`reminder-bot-6000`). Remember this name.
  * Click create app
  * Scroll down to Connect to GitHub
@@ -54,19 +54,23 @@ _Confused? Check out [these instructions](#getting-started-for-people-who-have-n
   * If you are hosting somewhere other than Heroku, set the callback URL to the `/hook` route of your hosted site.
     For example, if your hosted domain is `https://my-cool-bot.example.com`, the callback URL would be `https://my-cool-bot.example.com/hook`
 4. In your Heroku app dashboard, navigate to Settings and click Reveal Config Vars
- * Enter BOT_ID as KEY and your GroupMe Bot ID in the VALUE section. Then click "Add."
- * Enter GROUP_ID with the Group Id from GroupMe developers
-5. Add-on Heroku Scheduler and Heroku Postgres
- > Navigate to the “Resources” tab of the app’s Dashboard. Search for “Heroku Scheduler” in the Add-ons search box. Follow the prompts to provision the Add-on.
+ * Enter `BOT_ID` as KEY and your GroupMe Bot ID (found on the [GroupMe Bots page](https://dev.groupme.com/bots)) in the VALUE section. Then click "Add."
+ * Enter `GROUP_ID` with the Group Id associated with your bot
+5. Add-on Heroku Postgres Heroku Scheduler
+ * For Heroku Postgres, go to the Resources tab of the app dashboard. Then, simply search for "Heroku Postgres" and select the `Hobby Dev - Free` option (no further configuration required)
+ * For Heroku Scheduler, go back to the Resources tab and search for Heroku Scheduler. Click Submit Order Form.
+    * __Note:__ Heroku may require you to add a credit card to verify your identity. The card added should not be charged for the purposes of this app, but it unfortunately is a required step if you are hosting with heroku.
  * Click on the Heroku Scheduler in the list and it will open a new tab
- * Click Create job and select Every 10 minutes. This will wake up our bot to check if it is time to send a message every 10 minutes.
+ * Click Add Job and select Every 10 minutes. This will wake up our bot to check if it is time to send a message every 10 minutes.
  * In Run Command, type `node cron-check.js` and then press Save Job
- * For Heroku Postgres, simply search for it and select the `Hobby Dev - Free` option (no further configuration required)
 6. Start chatting with the Reminder Bot
  * In the group you added the bot to, try typing "Hey Reminder Bot, what is the status"
+ * Ask the reminder bot "Hey RBot, what are the available commands?" for more
 
 ## How it works
 - Each message sent in GroupMe is also sent to the bot
-- The bot has code written to parse the message and tell if you are talking to him (his name is Bob)
-- If you are talking to him, you can configure settings (which are stored in a text file instead of a database for simplicity) or enable the daily reminder
-- Heroku will wake the bot up temporarily every 10 minutes to check, and stay awake if it is close to time
+- The bot has code written to parse the message and tell if you are talking to him
+- If you are talking to him, he will listen to you and update the database when you configure settings or enable the daily reminder
+ - Heroku automatically puts the server to sleep when you haven't interacted with the bot for 30 minutes
+- Heroku will wake the bot up temporarily every 10 minutes to check if it is close to reminder time, and stay awake if it is close to time
+ - The bot sends the message to GroupMe at the scheduled time

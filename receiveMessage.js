@@ -115,11 +115,30 @@ function handleMessage(pgClient, message) {
     } else if (query.substring(0, 4) === "help" || query.substring(0, 8) === "commands"
         || query.substring(0, 18) === "available commands" || query.substring(0, 31) === "what are the available commands"
         || query.substring(0, 27) === "what commands are available") {
-        let msg = "Available commands:\
-- set name to\n\
-- etc\n\
-for more info, visit https://google.com !";
-        reply(msg);
+        let msg = "Available commands:";
+        fs.readFile("./README.md", { encoding: "utf-8" }, (err, data) => {
+            if (err) {
+                msg += "[ Could not read available commands ]";
+                console.error("Could not read all available commands", err);
+            } else {
+                //msg += data.substring(data.indexOf("## Available Commands"), data.indexOf("## Getting Started"));
+                msg += data.substring(data.indexOf("The following are the recommended variations:")+"The following are the recommended variations:".length, data.indexOf("## Getting Started"));
+            }
+            msg += "\nFor the full list, see https://github.com/92Eli/rbot/full_commands.md or say 'Hey RBot, show all commands'";
+            reply(msg);
+        })
+    } else if (query.substring(0, 12) === "all commands" || query.substring(0, 17) === "show all commands" || query.substring(0, 25) === "what are all the commands") {
+        let msg = "";
+        fs.readFile("./full_commands.md", (err, data) => {
+            if (err) {
+                msg = "[ Could not read available commands ]";
+                console.error("Could not read all available commands", err);
+            } else {
+                msg = data;
+            }
+            msg += "\nView in browser (formatted): https://github.com/92Eli/rbot/full_commands.md"; // todo here check
+            reply(msg);
+        });
     } else {
         reply("Sorry, I don't recongize that command.");
     }
@@ -291,7 +310,7 @@ function disableReminder(pgClient) {
         });
 }
 function setTimeZone(zoneStr) {
-    // todo
+    // todo implement this (right now in central time zone)
 }
 
 module.exports = { handleMessage };
