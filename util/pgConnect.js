@@ -1,4 +1,4 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") require("dotenv").config();
 const { Pool } = require("pg");
 const sslConfig = (process.env.NODE_ENV !== "production") ? false : { rejectUnauthorized: false }; // luv u heroku <3
 

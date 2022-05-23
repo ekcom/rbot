@@ -1,4 +1,4 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") require("dotenv").config();
 const setConfigTo = require("./util/setConfigTo");
 const reply = require("./util/sendMessage");
 const getConfigData = require("./util/getConfigData");
