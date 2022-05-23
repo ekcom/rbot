@@ -136,7 +136,7 @@ function handleMessage(pgClient, message) {
             } else {
                 msg = data;
             }
-            msg += "\nView in browser (formatted): https://github.com/92Eli/rbot/full_commands.md"; // todo here check
+            msg += "\nView in browser (formatted): https://github.com/92Eli/rbot/full_commands.md";
             reply(msg);
         });
     } else {

@@ -2,7 +2,9 @@
 _A daily reminder bot for GroupMe_
 
 Set a reminder for your whole group every day at a specific time.
-[todo screen shot of "don't forget to log", "it's tea time", "don't forget, meeting is TONIGHT at 6:00!"]
+![Reminder bot helpfully reminds the group: Don't forget, meeting is TONIGHT at 6:00!](/screenshots/rbot-demo-1.png)
+![Reminder bot playfully reminds the group: It's tea time!](/screenshots/rbot-demo-2.png)
+![Reminder bot respectfully reminds the group: Don't forget to log.](/screenshots/rbot-demo-3.png)
 
 ## Available Commands
 View the [full list](./full_commands.md) of available commands. The following are the recommended variations:
@@ -74,3 +76,6 @@ _Confused? Check out [these instructions](#getting-started-for-people-who-have-n
  - Heroku automatically puts the server to sleep when you haven't interacted with the bot for 30 minutes
 - Heroku will wake the bot up temporarily every 10 minutes to check if it is close to reminder time, and stay awake if it is close to time
  - The bot sends the message to GroupMe at the scheduled time
+
+## License
+This code is licensed under GNU General Public License v3.0
