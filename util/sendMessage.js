@@ -14,6 +14,7 @@ function reply(message, attachments=[]) {
             url: "https://i.groupme.com"
         }*/
     }
+    if (process.env.NODE_ENV !== "production") console.log("[dev] REPLY:", message);
     setTimeout(() => { // slow down the POST: we are too fast
     fetch("https://api.groupme.com/v3/bots/post", {
         method: "POST",

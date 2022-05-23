@@ -8,6 +8,7 @@ async function check() {
     try {
         const client2 = await getClient();
         const result = await setCronAlarm(client2);
+        client2.release();
         
         // console.log(result);
         if (result.close === false) {
@@ -17,7 +18,6 @@ async function check() {
         } else {
             // it will be past time. wait
             console.log("Keeping server awake because it is almost time...");
-            // todo... make sure the process actually stays alive?
         }
     } catch (err) {
         console.error("[cron-check] Error starting cron:", err);
