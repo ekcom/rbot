@@ -3,6 +3,12 @@ const { parseGroupmeError } = require("./parseGroupmeResponse");
 
 function reply(message, attachments=[]) {
     if (message.trim() === "") throw new Error("Message cannot be blank.");
+    if (message.length > 1000) {
+        if (message.length > 1988) throw new Error("Message is too long"); // not going to implement that
+        reply(`[1/2] ${message.substring(0, 994)}`); // 6 prefix chars
+        reply(`[2/2] ${message.substring(994, 1988)}`);
+        return;
+    }
     const body = {
         bot_id: process.env.BOT_ID,
         text: message,
