@@ -38,7 +38,7 @@ async function setUpDbWithClient() {
         // verify from groupme
         // todo verify via random query parameter agreed upon in setup
         if (process.env.GROUP_ID && req.body.group_id !== process.env.GROUP_ID) {
-            res.end("go away"); // unconfirmed.
+            return res.end("go away"); // unconfirmed.
         }
         try {
             //const json = JSON.parse(req.body);

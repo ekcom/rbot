@@ -19,7 +19,7 @@ async function setupDb(client) {
 
 async function addDefaultRow(client) {
     await client.query('INSERT INTO reminders (data) VALUES (\'{\
-"message": "Reminder! To change this, say \\"Hey RBot, set reminder to X\\"","active": "false","hourToSend":"6","minuteToSend":"30","daysToSend":"mtwrf"\
+"message": "Reminder! To change this, say \\"Hey RBot, set reminder to X\\"","active": "false","hourToSend":6,"minuteToSend":30,"daysToSend":"mtwrf"\
 }\')');
 }
 
