@@ -141,15 +141,16 @@ function handleMessage(pgClient, message) {
             reply(msg);
         });
     } else {
-        if (incorrectCommand.time + 60*1000 < Date.now()) { // 60s timeout
-            if (++incorrectCommand.tries >= 3) {
+        if (incorrectCommand.time + 10*1000 > Date.now()) { // 60s timeout
+            if (++incorrectCommand.tries === 3) {
                 reply("Sorry, I don't recongize that command. Type 'Hey RBot, help' for available commands.");
-                incorrectCommand.tries = 0; // reset
-            } else {
+            } else if (incorrectCommand.tries > 3) {
                 reply("Sorry, I still don't recongize that command.");
+            } else {
+                reply("Sorry, I don't recongize that command.");
             }
         } else {
-            incorrectCommand.time = Date.now(); // todo here
+            incorrectCommand.time = Date.now(); incorrectCommand.tries = 1;
             reply("Sorry, I don't recongize that command.");
         }
     }
